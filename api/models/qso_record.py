@@ -1,4 +1,9 @@
+from sqlalchemy import Sequence
+
 from extensions import db
+
+
+qso_record_id_seq = Sequence("qso_records_id_seq")
 
 
 class QSORecord(db.Model):
@@ -6,6 +11,8 @@ class QSORecord(db.Model):
 
     id = db.Column(
         db.Integer,
+        qso_record_id_seq,
+        server_default=qso_record_id_seq.next_value(),
         primary_key=True,
     )
 
