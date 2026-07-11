@@ -1,6 +1,11 @@
 from datetime import datetime
 
+from sqlalchemy import Sequence
+
 from extensions import db
+
+
+activation_id_seq = Sequence("activations_id_seq")
 
 
 class Activation(db.Model):
@@ -8,6 +13,8 @@ class Activation(db.Model):
 
     id = db.Column(
         db.Integer,
+        activation_id_seq,
+        server_default=activation_id_seq.next_value(),
         primary_key=True,
     )
 
