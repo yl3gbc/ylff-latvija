@@ -1,6 +1,11 @@
 from datetime import datetime
 
+from sqlalchemy import Sequence
+
 from extensions import db
+
+
+page_content_id_seq = Sequence("page_contents_id_seq")
 
 
 class PageContent(db.Model):
@@ -8,6 +13,8 @@ class PageContent(db.Model):
 
     id = db.Column(
         db.Integer,
+        page_content_id_seq,
+        server_default=page_content_id_seq.next_value(),
         primary_key=True,
     )
 
