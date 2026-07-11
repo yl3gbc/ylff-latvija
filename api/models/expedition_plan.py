@@ -1,12 +1,22 @@
 from datetime import datetime
 
+from sqlalchemy import Sequence
+
 from extensions import db
+
+
+expedition_plan_id_seq = Sequence("expedition_plans_id_seq")
 
 
 class ExpeditionPlan(db.Model):
     __tablename__ = "expedition_plans"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        expedition_plan_id_seq,
+        server_default=expedition_plan_id_seq.next_value(),
+        primary_key=True,
+    )
     callsign = db.Column(db.String(50), nullable=False)
     operators = db.Column(db.String(255))
     ylff_reference = db.Column(db.String(50), nullable=False)
