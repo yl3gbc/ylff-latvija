@@ -1,12 +1,22 @@
 from datetime import datetime
 
+from sqlalchemy import Sequence
+
 from extensions import db
+
+
+user_id_seq = Sequence("users_id_seq")
 
 
 class User(db.Model):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        user_id_seq,
+        server_default=user_id_seq.next_value(),
+        primary_key=True,
+    )
 
     email = db.Column(db.String(255), unique=True, nullable=False)
 
