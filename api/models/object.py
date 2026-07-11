@@ -1,4 +1,9 @@
+from sqlalchemy import Sequence
+
 from extensions import db
+
+
+ylff_object_id_seq = Sequence("ylff_objects_id_seq")
 
 
 class YLFFObject(db.Model):
@@ -6,6 +11,8 @@ class YLFFObject(db.Model):
 
     id = db.Column(
         db.Integer,
+        ylff_object_id_seq,
+        server_default=ylff_object_id_seq.next_value(),
         primary_key=True,
     )
 
