@@ -36,6 +36,11 @@ def main():
     source_engine = create_engine(PG_URL)
 
     with app.app_context(), source_engine.connect() as pg_conn:
+        for model, table_name in reversed(TABLES_IN_ORDER):
+            db.session.execute(model.__table__.delete())
+            db.session.commit()
+            print(f"{table_name}: cleared DuckDB destination")
+
         for model, table_name in TABLES_IN_ORDER:
             result = pg_conn.execute(text(f"SELECT * FROM {table_name}"))
             rows = [dict(row) for row in result.mappings().all()]
@@ -44,7 +49,6 @@ def main():
                 print(f"{table_name}: 0 rows in Postgres, skipping")
                 continue
 
-            db.session.execute(model.__table__.delete())
             db.session.execute(model.__table__.insert(), rows)
             db.session.commit()
 
