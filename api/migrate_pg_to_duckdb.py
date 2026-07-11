@@ -63,13 +63,22 @@ def main():
 
 def _fix_sequence(table_name, max_id):
     seq_name = f"{table_name}_id_seq"
+
     try:
-        db.session.execute(text(f"ALTER SEQUENCE {seq_name} RESTART WITH {max_id + 1}"))
+        result = db.session.execute(
+            text(
+                f"SELECT nextval('{seq_name}') "
+                f"FROM range({max_id})"
+            )
+        )
+        result.fetchall()
         db.session.commit()
-        print(f"  -> sequence {seq_name} restarted at {max_id + 1}")
+        print(f"  -> sequence {seq_name} advanced past {max_id}")
     except Exception as error:
         db.session.rollback()
-        print(f"  -> could not adjust sequence {seq_name}: {error}")
+        raise RuntimeError(
+            f"Could not advance sequence {seq_name}: {error}"
+        ) from error
 
 
 if __name__ == "__main__":
