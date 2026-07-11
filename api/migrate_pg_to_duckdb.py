@@ -16,10 +16,10 @@ from models.page_content import PageContent
 from models.qso_record import QSORecord
 from models.user import User
 
-PG_URL = os.getenv("PG_DATABASE_URL")
+PG_URL = os.getenv("PG_DATABASE_URL") or os.getenv("DATABASE_URL")
 
 if not PG_URL:
-    sys.exit("Set PG_DATABASE_URL first")
+    sys.exit("Set PG_DATABASE_URL or DATABASE_URL first")
 
 TABLES_IN_ORDER = [
     (User, "users"),
