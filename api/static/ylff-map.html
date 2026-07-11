@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <title>YLFF Karte</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #07111f;
+      color: white;
+    }
+
+    .map-shell {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      height: 760px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 18px 45px rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .sidebar {
+      background: rgba(7,17,31,.96);
+      padding: 22px;
+      overflow-y: auto;
+    }
+
+    .sidebar h2 {
+      margin: 0 0 20px;
+      color: #facc15;
+    }
+
+    .stat-box {
+      background: rgba(255,255,255,.07);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0;
+      font-weight: bold;
+    }
+
+    .tree {
+      width: 34px;
+      height: 34px;
+      background: transparent;
+      border: none;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 31px;
+      line-height: 31px;
+      text-shadow:
+        0 2px 4px rgba(0,0,0,.75),
+        0 0 3px rgba(255,255,255,.65);
+    }
+
+    .tree-green { color: #16a34a; }
+    .tree-orange { color: #f59e0b; }
+    .tree-red { color: #dc2626; }
+    .tree-blue { color: #2563eb; }
+
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+
+    .top-stats {
+      position: absolute;
+      z-index: 900;
+      top: 22px;
+      left: 340px;
+      background: rgba(7,17,31,.92);
+      padding: 14px 18px;
+      border-radius: 14px;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,.45);
+      font-weight: bold;
+    }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 16px;
+    }
+
+    .popup-title {
+      font-weight: 900;
+      font-size: 18px;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .popup-status {
+      margin-top: 8px;
+      font-weight: bold;
+    }
+
+    .popup-button {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 11px;
+      border-radius: 9px;
+      background: #16a34a;
+      color: white !important;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="map-shell">
+    <aside class="sidebar">
+      <h2>YLFF karte</h2>
+
+      <div class="stat-box">
+        <strong>Objektu statuss</strong>
+        <div id="totalCount">Kopā: ...</div>
+      </div>
+
+      <div class="legend-row">
+        <img src="/static/map-icons/green-tree.svg" width="28">
+        <span>Aktivizēts objekts</span>
+      </div>
+
+      <div class="legend-row">
+        <img src="/static/map-icons/orange-tree.svg" width="28">
+        <span>Neaktivizēts objekts</span>
+      </div>
+
+      <div class="legend-row">
+        <img src="/static/map-icons/red-tree.svg" width="28">
+        <span>Anulēts objekts</span>
+      </div>
+
+      <div class="legend-row">
+        <img src="/static/map-icons/blue-link.svg" width="28">
+        <span>Ietilpst citā objektā<br><small>(uzskaitīts līdz datumam)</small></span>
+      </div>
+    </aside>
+
+    <main style="position:relative;">
+      <div class="top-stats">
+        <span id="greenCount">🟢 0</span>
+        <span id="orangeCount">🟠 0</span>
+        <span id="redCount">🔴 0</span>
+        <span id="blueCount">🔵 0</span>
+        <span id="purpleCount">🟣 0</span>
+      </div>
+
+      <div id="map"></div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const map = L.map("map").setView([56.95, 24.6], 7);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 18,
+      attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+
+    function getMarkerType(p) {
+      if (p.has_planned_expedition === true) {
+        return "purple";
+      }
+
+      if (p.included_in_reference) {
+        return "blue";
+      }
+
+      if (
+        p.object_status === "cancelled" ||
+        p.object_status === "annulled" ||
+        p.object_status === "inactive"
+      ) {
+        return "red";
+      }
+
+      if (p.is_activated === true) {
+        return "green";
+      }
+
+      return "orange";
+    }
+
+    function createIcon(type) {
+      const icons = {
+        green: "/static/map-icons/green-tree.svg",
+        orange: "/static/map-icons/orange-tree.svg",
+        red: "/static/map-icons/red-tree.svg",
+        blue: "/static/map-icons/blue-link.svg",
+        purple: "/static/map-icons/purple-tree.svg"
+      };
+
+      return L.icon({
+        iconUrl: icons[type] || icons.green,
+        iconSize: [34, 42],
+        iconAnchor: [17, 42],
+        popupAnchor: [0, -40]
+      });
+    }
+
+    fetch("/objects/geojson")
+      .then(response => response.json())
+      .then(data => {
+        let green = 0;
+        let orange = 0;
+        let red = 0;
+        let blue = 0;
+        let purple = 0;
+
+        data.features.forEach(feature => {
+          const p = feature.properties;
+          const coords = feature.geometry.coordinates;
+          const type = getMarkerType(p);
+
+          if (type === "green") green++;
+          if (type === "orange") orange++;
+          if (type === "red") red++;
+          if (type === "blue") blue++;
+          if (type === "purple") purple++;
+
+          let plannedHtml = "";
+
+          if (p.planned_expeditions && p.planned_expeditions.length > 0) {
+            plannedHtml = "<hr><strong>📡 Plānotās ekspedīcijas</strong>";
+
+            p.planned_expeditions.forEach(plan => {
+              plannedHtml += `
+                <div>
+                  <strong>${plan.callsign || "-"}</strong><br>
+                  Datums: ${plan.planned_date || "-"}<br>
+                  UTC: ${plan.planned_time_utc || "-"}<br>
+                  Mode: ${plan.mode || "-"}
+                </div>
+              `;
+            });
+          }
+
+          L.marker([coords[1], coords[0]], {
+            icon: createIcon(type)
+          })
+          .addTo(map)
+          .bindPopup(`
+            <div class="popup-title">${p.reference}</div>
+            <div>${p.name}</div>
+            <div class="popup-status">Aktivizācijas statuss: ${p.activation_status_text || "Nav aktivizēts"}</div>
+            ${plannedHtml}
+            <a class="popup-button" href="/object/${p.reference}" target="_blank">
+              Skatīt detaļas
+            </a>
+          `);
+        });
+
+        document.getElementById("totalCount").innerText =
+          "Kopā: " + data.features.length;
+
+        document.getElementById("greenCount").innerText = "🟢 " + green;
+        document.getElementById("orangeCount").innerText = "🟠 " + orange;
+        document.getElementById("redCount").innerText = "🔴 " + red;
+        document.getElementById("blueCount").innerText = "🔵 " + blue;
+        document.getElementById("purpleCount").innerText = "🟣 " + purple;
+      });
+  </script>
+</body>
+</html>

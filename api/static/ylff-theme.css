@@ -1,0 +1,284 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #07110b;
+  color: white;
+}
+
+.ylff-page {
+  min-height: 100vh;
+  background:
+    linear-gradient(
+      rgba(3, 7, 18, 0.10),
+      rgba(3, 7, 18, 0.55)
+    ),
+    url("/static/img/hero_bg.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.ylff-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  min-height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 46px;
+  background: rgba(3, 7, 18, 0.72);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(7px);
+}
+
+.ylff-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.ylff-brand-logo {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,.55));
+}
+
+.ylff-brand-title {
+  font-size: 34px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #f8f4dc;
+  line-height: 1;
+  text-shadow: 0 3px 8px rgba(0,0,0,.65);
+}
+
+.ylff-brand-subtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #e5d9a8;
+  letter-spacing: 1px;
+  text-shadow: 0 3px 8px rgba(0,0,0,.65);
+}
+
+.ylff-nav {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.ylff-nav a {
+  color: #f8f4dc;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  text-shadow: 0 3px 8px rgba(0,0,0,.65);
+  white-space: nowrap;
+}
+
+.ylff-nav a:hover {
+  color: #facc15;
+}
+
+.ylff-container {
+  max-width: 1300px;
+  margin: auto;
+  padding: 34px 46px 46px;
+}
+
+.ylff-card {
+  background: rgba(8, 28, 12, .80);
+  border: 1px solid rgba(245, 200, 93, .24);
+  border-radius: 16px;
+  padding: 26px;
+  box-shadow: 0 10px 32px rgba(0,0,0,.38);
+  backdrop-filter: blur(5px);
+  margin-bottom: 24px;
+}
+
+.ylff-title {
+  color: #facc15;
+  font-family: Georgia, serif;
+  font-size: 36px;
+  margin: 0 0 18px;
+}
+
+.ylff-subtitle {
+  color: #e5e7eb;
+  line-height: 1.7;
+  font-size: 16px;
+}
+
+.ylff-button {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+  background: rgba(22, 101, 52, .92);
+}
+
+.ylff-button-gold {
+  background: rgba(146, 94, 18, .92);
+}
+
+.ylff-button-dark {
+  background: rgba(15, 23, 42, .82);
+}
+
+.ylff-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ylff-table th,
+.ylff-table td {
+  padding: 11px 9px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  text-align: left;
+  font-size: 14px;
+}
+
+.ylff-table th {
+  color: #86efac;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.ylff-table a,
+.ylff-link {
+  color: #86efac;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.ylff-input {
+  padding: 13px 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.28);
+  background: rgba(15, 23, 42, .72);
+  color: white;
+  font-size: 16px;
+  outline: none;
+}
+
+.ylff-input::placeholder {
+  color: rgba(255,255,255,.58);
+}
+
+.ylff-search-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+
+.ylff-search-row .ylff-input {
+  flex: 1;
+  min-width: 260px;
+}
+
+.ylff-status-complete {
+  color: #86efac;
+  font-weight: bold;
+}
+
+.ylff-status-incomplete {
+  color: #facc15;
+  font-weight: bold;
+}
+
+.ylff-footer {
+  max-width: 1300px;
+  margin: auto;
+  padding: 18px 46px 28px;
+  color: #f8f4dc;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  text-shadow: 0 3px 8px rgba(0,0,0,.75);
+}
+
+@media (max-width: 1050px) {
+  .ylff-topbar {
+    min-height: auto;
+    padding: 18px;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ylff-nav {
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .ylff-container {
+    padding: 24px;
+  }
+}
+
+.ylff-lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, .72);
+  border: 1px solid rgba(245, 200, 93, .22);
+}
+
+.ylff-lang-switch a {
+  color: #facc15 !important;
+  font-size: 12px !important;
+}
+
+.ylff-lang-switch span {
+  color: rgba(255,255,255,.45);
+}
+
+.ylff-form label {
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 7px;
+  font-weight: bold;
+  color: #f5e8b0;
+}
+
+.ylff-form textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.ylff-form label {
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 7px;
+  font-weight: bold;
+  color: #f5e8b0;
+}
+
+.ylff-form textarea,
+.ylff-form select {
+  width: 100%;
+}
+
+.ylff-form input {
+  width: 100%;
+}

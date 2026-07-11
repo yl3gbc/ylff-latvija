@@ -1,0 +1,50 @@
+services:
+  api:
+    build:
+      context: ./api
+
+    container_name: ylff-api
+
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    env_file:
+      - ./api/.env
+
+    ports:
+      - "127.0.0.1:8003:8003"
+
+    volumes:
+      - ./api:/app
+
+    working_dir: /app
+
+    command: ["uv", "run", "--python", "/usr/local/bin/python3.14", "python", "app.py"]
+
+  postgres:
+    image: postgres:18.4
+
+    container_name: ylff-postgres
+
+    restart: unless-stopped
+
+    env_file:
+      - ./api/.env
+
+    ports:
+      - "127.0.0.1:5438:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

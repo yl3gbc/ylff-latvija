@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <title>YLFF objektu karte</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
+
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    #map { width: 100vw; height: 100vh; }
+    input[type="checkbox"] { accent-color: #22c55e; }
+
+    .ylff-marker {
+      width: 30px; height: 34px; border: 2px solid #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,.45);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px; font-weight: bold;
+      clip-path: polygon(0 0,100% 0,100% 75%,50% 100%,0 75%);
+    }
+
+    .active { background: #16803a; }
+    .planned { background: #f59e0b; }
+    .included { background: #2563eb; }
+    .inactive, .cancelled { background: #dc2626; }
+
+    .map-legend {
+      position: absolute; bottom: 20px; left: 20px; z-index: 999;
+      background: rgba(10, 18, 28, 0.92); color: #f1f5f9;
+      padding: 16px 18px; border-radius: 14px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.45);
+      font-size: 14px; line-height: 1.8;
+    }
+
+    .map-legend-title { font-weight: bold; color: #22c55e; }
+    .popup-title { font-weight: bold; font-size: 15px; }
+    .popup-status { margin-top: 6px; font-weight: bold; }
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+
+  <div class="map-legend">
+    <label><input type="checkbox" id="filter-active" checked> Aktīvie</label><br>
+    <label><input type="checkbox" id="filter-planned" checked> Plānojamie</label><br>
+    <label><input type="checkbox" id="filter-included" checked> Ietilpst citā objektā</label><br>
+    <label><input type="checkbox" id="filter-inactive" checked> Neaktīvie / anulētie</label>
+
+    <br><br>
+    <div class="map-legend-title">YLFF apzīmējumi</div>
+    🌲 Aktīvs objekts<br>
+    ⏳ Plānojamais objekts<br>
+    🔗 Ietilpst citā objektā<br>
+    ✖ Neaktīvs / anulēts<br><br>
+    🟢 Maz objektu zonā<br>
+    🟡 Vidējs objektu skaits<br>
+    🔴 Daudz objektu vienuviet
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+  <script>
+    const map = L.map("map").setView([56.9496, 24.1052], 8);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "© OpenStreetMap"
+    }).addTo(map);
+
+    const markers = L.markerClusterGroup();
+    map.addLayer(markers);
+
+    let allData = null;
+
+    function statusLabel(status) {
+      if (status === "planned") return "Plānojamais";
+      if (status === "included") return "Ietilpst citā objektā";
+      if (status === "cancelled") return "Anulēts";
+      if (status === "inactive") return "Neaktīvs";
+      return "Aktīvs";
+    }
+
+    function statusIcon(status) {
+      if (status === "planned") return "⏳";
+      if (status === "included") return "🔗";
+      if (status === "cancelled" || status === "inactive") return "✖";
+      return "🌲";
+    }
+
+    function markerClass(status) {
+      if (status === "planned") return "planned";
+      if (status === "included") return "included";
+      if (status === "cancelled") return "cancelled";
+      if (status === "inactive") return "inactive";
+      return "active";
+    }
+
+    function createObjectIcon(status) {
+      return L.divIcon({
+        className: "",
+        html: `<div class="ylff-marker ${markerClass(status)}">${statusIcon(status)}</div>`,
+        iconSize: [30, 34],
+        iconAnchor: [15, 34],
+        popupAnchor: [0, -34],
+      });
+    }
+
+    function statusAllowed(status) {
+      if (status === "active") return document.getElementById("filter-active").checked;
+      if (status === "planned") return document.getElementById("filter-planned").checked;
+      if (status === "included") return document.getElementById("filter-included").checked;
+      if (status === "inactive" || status === "cancelled") return document.getElementById("filter-inactive").checked;
+      return true;
+    }
+
+    function renderMarkers(data) {
+      markers.clearLayers();
+
+      const filteredFeatures = data.features.filter(feature =>
+        statusAllowed(feature.properties.status)
+      );
+
+      const geoLayer = L.geoJSON({
+        type: "FeatureCollection",
+        features: filteredFeatures
+      }, {
+        pointToLayer: function (feature, latlng) {
+          return L.marker(latlng, {
+            icon: createObjectIcon(feature.properties.status)
+          });
+        },
+
+        onEachFeature: function (feature, layer) {
+          const p = feature.properties;
+
+          let includedText = "";
+
+          if (p.status === "included") {
+            includedText = `
+              <br>
+              <small>
+                Ietilpst: ${p.included_in_reference || "-"}<br>
+                Līdz: ${p.included_until || "-"}
+              </small>
+            `;
+          }
+
+          layer.bindPopup(`
+            <div class="popup-title">${p.reference}</div>
+            <div>${p.name}</div>
+            <small>${p.description || ""}</small>
+            ${includedText}
+            <div class="popup-status">Statuss: ${statusLabel(p.status)}</div>
+            <br>
+            <a
+              href="/objects/${p.reference}"
+              target="_blank"
+              style="
+                display:inline-block;
+                margin-top:8px;
+                padding:6px 10px;
+                background:#16803a;
+                color:white;
+                text-decoration:none;
+                border-radius:6px;
+                font-weight:bold;
+              "
+            >
+              Vairāk info
+            </a>
+          `);
+        }
+      });
+
+      markers.addLayer(geoLayer);
+    }
+
+    fetch("https://api.ylff.id.lv/objects/geojson")
+      .then(response => response.json())
+      .then(data => {
+        allData = data;
+        renderMarkers(allData);
+      });
+
+    document.querySelectorAll("input[type=checkbox]").forEach(item => {
+      item.addEventListener("change", () => {
+        if (allData) renderMarkers(allData);
+      });
+    });
+  </script>
+</body>
+</html>
