@@ -436,6 +436,7 @@ def admin_activation_delete(activation_id):
     QSORecord.query.filter_by(
         activation_id=activation.id,
     ).delete()
+    db.session.commit()
 
     db.session.delete(activation)
     db.session.commit()
