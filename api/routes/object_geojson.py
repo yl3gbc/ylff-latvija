@@ -18,13 +18,17 @@ object_geojson_bp = Blueprint(
 def objects_geojson():
     objects = YLFFObject.query.all()
 
-    complete_activations = Activation.query.filter_by(
-        status="complete",
-    ).all()
+    all_activations = Activation.query.all()
+
+    completed_object_ids = {
+        activation.ylff_object_id
+        for activation in all_activations
+        if activation.status == "complete"
+    }
 
     activations_by_object = {}
 
-    for activation in complete_activations:
+    for activation in all_activations:
         activations_by_object.setdefault(
             activation.ylff_object_id,
             [],
@@ -85,7 +89,7 @@ def objects_geojson():
             for activation in item_activations
         )
 
-        is_activated = bool(item_activations)
+        is_activated = item.id in completed_object_ids
 
         features.append(
             {
