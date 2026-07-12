@@ -6,3 +6,4 @@
 - Lokālās Git drošības pārbaudes komandas pēdiņu ekranējumā radās sintakses kļūda. Projekta faili netika mainīti; pārbaude tika atkārtota ar korektu lasīšanas komandu.
 - Hosta `uv run` tika kļūdaini izmantots API JSON pārbaudei un mēģināja aizvietot konteineram piederošo `api/.venv`, saņemot `Permission denied`. Dati netika skarti; pārbaude atkārtota ar konteinera Python.
 - Nginx konfigurācijas pārbaudei tika izmantots `rg`, bet serverī tas nebija instalēts. Nekas netika mainīts; pārbaude atkārtota ar pieejamo `grep`.
+- Nginx augšupielādes limita ievietošanas skripts neatrada precīzi norādīto HTTPS servera fragmentu atšķirīga konfigurācijas formatējuma dēļ. Drošības pārbaude apturēja skriptu, un Nginx konfigurācija netika mainīta.
