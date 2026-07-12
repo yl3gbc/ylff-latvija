@@ -150,6 +150,16 @@ def object_page(reference):
       background: #ea580c;
     }}
 
+    .page-navigation {{
+      margin-bottom: 24px;
+    }}
+
+    .page-navigation-bottom {{
+      margin-top: 8px;
+      margin-bottom: 0;
+      text-align: center;
+    }}
+
     table {{
       width: 100%;
       border-collapse: collapse;
@@ -186,6 +196,16 @@ def object_page(reference):
 
 <body>
   <div class="container">
+
+    <div class="page-navigation">
+      <a class="btn btn-blue" href="/map">
+        ← Atpakaļ uz karti
+      </a>
+
+      <a class="btn btn-orange" href="/">
+        Uz sākumu
+      </a>
+    </div>
 
     <div class="card">
       <h1>{item.reference}</h1>
@@ -260,6 +280,16 @@ def object_page(reference):
           {activation_rows}
         </tbody>
       </table>
+    </div>
+
+    <div class="page-navigation page-navigation-bottom">
+      <a class="btn btn-blue" href="/map">
+        ← Atpakaļ uz karti
+      </a>
+
+      <a class="btn btn-orange" href="/">
+        Uz sākumu
+      </a>
     </div>
 
   </div>
