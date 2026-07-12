@@ -1,3 +1,5 @@
+from datetime import date
+
 from flask import Blueprint
 
 from models.activation import Activation
@@ -20,10 +22,13 @@ def objects_geojson():
         status="complete",
     ).all()
 
-    activated_ids = {
-        activation.ylff_object_id
-        for activation in complete_activations
-    }
+    activations_by_object = {}
+
+    for activation in complete_activations:
+        activations_by_object.setdefault(
+            activation.ylff_object_id,
+            [],
+        ).append(activation)
 
     approved_plans = ExpeditionPlan.query.filter_by(
         status="approved",
@@ -58,7 +63,29 @@ def objects_geojson():
             [],
         )
 
-        is_activated = item.id in activated_ids
+        item_activations = activations_by_object.get(
+            item.id,
+            [],
+        )
+
+        latest_activation = (
+            max(
+                item_activations,
+                key=lambda activation: (
+                    activation.activation_start or date.min,
+                    activation.id or 0,
+                ),
+            )
+            if item_activations
+            else None
+        )
+
+        total_qso = sum(
+            activation.qso_count or 0
+            for activation in item_activations
+        )
+
+        is_activated = bool(item_activations)
 
         features.append(
             {
@@ -68,6 +95,20 @@ def objects_geojson():
                     "reference": item.reference,
                     "name": item.name,
                     "description": item.description,
+                    "image_url": item.image_url,
+                    "total_qso": total_qso,
+                    "last_activator_callsign": (
+                        latest_activation.callsign
+                        if latest_activation
+                        else None
+                    ),
+                    "activation_count": len(item_activations),
+                    "last_activation_date": (
+                        latest_activation.activation_start.isoformat()
+                        if latest_activation
+                        and latest_activation.activation_start
+                        else None
+                    ),
                     "object_status": item.status,
                     "is_activated": is_activated,
                     "activation_status_text": "Aktivizēts" if is_activated else "Vēl nav aktivizēts",
