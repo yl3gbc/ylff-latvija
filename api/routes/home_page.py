@@ -78,15 +78,6 @@ def home_page():
           </tr>
         """
 
-    if not planned_rows:
-        planned_rows = """
-          <tr>
-            <td colspan="6">
-              {txt["no_plans"]}
-            </td>
-          </tr>
-        """
-
     latest_rows = ""
 
     latest = activations[:8]
