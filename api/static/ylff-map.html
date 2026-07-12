@@ -102,9 +102,19 @@
       margin-bottom: 6px;
     }
 
-    .popup-status {
+    .popup-image {
+      display: block;
+      width: 100%;
+      max-width: 240px;
+      height: 120px;
+      margin: 8px 0;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .popup-stats {
       margin-top: 8px;
-      font-weight: bold;
+      line-height: 1.5;
     }
 
     .popup-button {
@@ -235,6 +245,19 @@
           if (type === "blue") blue++;
           if (type === "purple") purple++;
 
+          let imageHtml = "";
+
+          if (p.image_url) {
+            imageHtml = `
+              <img
+                class="popup-image"
+                src="${p.image_url}"
+                alt="${p.reference}"
+                onerror="this.style.display='none'"
+              >
+            `;
+          }
+
           let plannedHtml = "";
 
           if (p.planned_expeditions && p.planned_expeditions.length > 0) {
@@ -257,12 +280,19 @@
           })
           .addTo(map)
           .bindPopup(`
-            <div class="popup-title">${p.reference}</div>
-            <div>${p.name}</div>
-            <div class="popup-status">Aktivizācijas statuss: ${p.activation_status_text || "Nav aktivizēts"}</div>
+            <div class="popup-title">
+              ${p.reference} — ${p.name}
+            </div>
+            ${imageHtml}
+            <div class="popup-stats">
+              <strong>Total QSO:</strong> ${p.total_qso || 0}<br>
+              <strong>Call:</strong> ${p.last_activator_callsign || "-"}<br>
+              <strong>Aktivizāciju skaits:</strong> ${p.activation_count || 0}<br>
+              <strong>Datums:</strong> ${p.last_activation_date || "-"}
+            </div>
             ${plannedHtml}
             <a class="popup-button" href="/object/${p.reference}" target="_blank">
-              Skatīt detaļas
+              Tālāk
             </a>
           `);
         });
