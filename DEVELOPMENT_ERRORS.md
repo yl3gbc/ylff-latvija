@@ -4,3 +4,4 @@
 
 - Git bundle sākotnēji tika mēģināts izveidot `/webprojekti`, kur lietotājam nebija rakstīšanas tiesību. Labots, izmantojot lietotāja mājas mapi; bundle vēlāk nolemts nesaglabāt.
 - Lokālās Git drošības pārbaudes komandas pēdiņu ekranējumā radās sintakses kļūda. Projekta faili netika mainīti; pārbaude tika atkārtota ar korektu lasīšanas komandu.
+- Hosta `uv run` tika kļūdaini izmantots API JSON pārbaudei un mēģināja aizvietot konteineram piederošo `api/.venv`, saņemot `Permission denied`. Dati netika skarti; pārbaude atkārtota ar konteinera Python.
