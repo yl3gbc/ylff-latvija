@@ -51,7 +51,7 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 # UV
 # =========================
 
-COPY --from=ghcr.io/astral-sh/uv:0.11.28 \
+COPY --from=ghcr.io/astral-sh/uv:0.11.30 \
     /uv \
     /usr/local/bin/uv
 
