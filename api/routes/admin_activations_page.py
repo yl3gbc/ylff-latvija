@@ -58,13 +58,20 @@ def admin_activations_page():
                     "%Y-%m-%d",
                 ).date()
 
+            qso_count_value = int(qso_count or 0)
+
             activation = Activation(
                 callsign=callsign,
                 ylff_object_id=ylff_object.id,
                 operators=operators or callsign,
-                qso_count=int(qso_count or 0),
+                qso_count=qso_count_value,
                 activation_start=start_date,
                 activation_end=end_date,
+                status=(
+                    "complete"
+                    if qso_count_value >= 100
+                    else "incomplete"
+                ),
             )
 
             db.session.add(activation)
