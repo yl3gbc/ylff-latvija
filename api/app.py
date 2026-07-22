@@ -12,6 +12,7 @@ from auth.routes import auth_bp
 from config import Config
 from extensions import db
 from models.activation import Activation
+from models.diploma_record import DiplomaRecord
 from models.media import MediaFile
 from models.object import YLFFObject
 from models.page_content import PageContent
