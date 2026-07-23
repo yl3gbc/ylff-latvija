@@ -86,13 +86,26 @@ def create_activation(current_user):
             "%Y-%m-%d",
         ).date()
 
+    try:
+        qso_count = int(data.get("qso_count") or 0)
+    except (TypeError, ValueError):
+        return {"error": "qso_count must be an integer"}, 400
+
+    if qso_count < 0:
+        return {"error": "qso_count cannot be negative"}, 400
+
     activation = Activation(
         callsign=callsign.upper(),
         ylff_object_id=ylff_object.id,
-        qso_count=data.get("qso_count", 0),
+        qso_count=qso_count,
         activation_start=activation_start,
         activation_end=activation_end,
         operators=data.get("operators"),
+        status=(
+            "complete"
+            if qso_count >= 100
+            else "incomplete"
+        ),
     )
 
     db.session.add(activation)
