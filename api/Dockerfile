@@ -33,7 +33,7 @@ RUN apt update && apt install -y \
 WORKDIR /tmp
 
 RUN git clone --depth 1 \
-    --branch v3.14.6 \
+    --branch v3.14.7 \
     https://github.com/python/cpython.git
 
 WORKDIR /tmp/cpython
@@ -51,7 +51,7 @@ ENV LD_LIBRARY_PATH=/usr/local/lib
 # UV
 # =========================
 
-COPY --from=ghcr.io/astral-sh/uv:0.12.1 \
+COPY --from=ghcr.io/astral-sh/uv:0.12.5 \
     /uv \
     /usr/local/bin/uv
 
