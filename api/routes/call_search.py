@@ -313,7 +313,7 @@ def activity_result(callsign):
             <td>{award_status(activator_count, 15)}</td>
             <td>{award_status(activator_count, 20)}</td>
             <td>{award_status(activator_count, 25)}</td>
-            <td>{award_status(activator_count, 100)}</td>
+            <td>{award_status(activator_count, 25)}</td>
           </tr>
         </tbody>
       </table>
@@ -375,7 +375,7 @@ def activity_result(callsign):
             <td>{award_status(hunter_count, 25)}</td>
             <td>{award_status(hunter_count, 35)}</td>
             <td>{award_status(hunter_count, 50)}</td>
-            <td>{award_status(hunter_count, 100)}</td>
+            <td>{award_status(hunter_count, 50)}</td>
           </tr>
         </tbody>
       </table>
