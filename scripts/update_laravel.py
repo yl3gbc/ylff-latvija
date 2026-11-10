@@ -15,7 +15,7 @@ try:
     show("git", "fetch", "https://github.com/laravel/laravel.git", "13.x")
     if value("git", "rev-list", "--count", "HEAD..FETCH_HEAD") != "0":
         show("git", "merge", "--no-edit", "FETCH_HEAD")
-    urllib.request.urlopen("http://127.0.0.1:8080/", timeout=20).read(1)
+    urllib.request.urlopen("http://127.0.0.1:8080/ylff", timeout=20).read(1)
     if value("git", "rev-list", "--count", "origin/ylff--php..HEAD") != "0":
         show("git", "push", "origin", "ylff--php")
     print("OK: Laravel 13.x un Framework 13.x ir atjaunināti")
